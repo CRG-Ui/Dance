@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hip Hop Practice Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: #1a1a1a; color: #f0f0f0; }
+  .section { max-width: 1000px; margin: auto; padding: 2rem; }
+  .card { background: #2a2a2a; border-radius: 0.75rem; padding: 1rem; text-align: center; transition: transform 0.2s; }
+  .card:hover { transform: scale(1.05); }
+  .timer { font-size: 2rem; font-weight: bold; text-align: center; }
+  .memory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
+  .memory-card { background: #333; border-radius: 0.5rem; height: 100px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:bold; font-size:1.2rem; }
+</style>
+</head>
+<body class="bg-gray-900 text-white">
+
+<header class="section text-center">
+  <h1 class="text-4xl font-extrabold text-[#ff3c00] mb-2">Hip Hop Practice Hub</h1>
+  <p class="text-gray-300">Learn, practice, and master the core fundamentals of hip hop!</p>
+</header>
+
+<!-- Vocabulary Section -->
+<section class="section">
+  <h2 class="text-2xl font-bold mb-4">Dance Vocabulary</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card">
+      <h3 class="font-bold text-xl mb-2">Popping</h3>
+      <p>Quick contraction of muscles to create a pop effect.</p>
+      <video src="#" controls class="w-full mt-2 rounded"></video>
+    </div>
+    <div class="card">
+      <h3 class="font-bold text-xl mb-2">Locking</h3>
+      <p>Freezing movements with sudden pauses.</p>
+      <video src="#" controls class="w-full mt-2 rounded"></video>
+    </div>
+    <div class="card">
+      <h3 class="font-bold text-xl mb-2">Toprock</h3>
+      <p>Foundational upright footwork in breakdancing.</p>
+      <video src="#" controls class="w-full mt-2 rounded"></video>
+    </div>
+  </div>
+</section>
+
+<!-- Warm-Up Section -->
+<section class="section">
+  <h2 class="text-2xl font-bold mb-4">Warm-Up Timer</h2>
+  <div class="text-center mb-4">
+    <button id="startWarmup" class="bg-[#ff3c00] px-6 py-2 rounded font-bold hover:bg-[#ff5733]">Start 5 min Warm-Up</button>
+  </div>
+  <div id="warmupTimer" class="timer">05:00</div>
+</section>
+
+<!-- Memory Game Section -->
+<section class="section">
+  <h2 class="text-2xl font-bold mb-4">Visual Memory Game</h2>
+  <p class="text-gray-400 mb-2">Match the move name with its GIF/video!</p>
+  <div class="memory-grid" id="memoryGrid"></div>
+</section>
+
+<!-- Freestyle Section -->
+<section class="section">
+  <h2 class="text-2xl font-bold mb-4">Freestyle Practice</h2>
+  <p class="text-gray-400 mb-2">Select music and practice your freestyle moves!</p>
+  <audio controls class="w-full mb-4">
+    <source src="#" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <div class="text-center mb-2">
+    <button id="startFreestyle" class="bg-[#ff3c00] px-6 py-2 rounded font-bold hover:bg-[#ff5733]">Start 2 min Freestyle</button>
+  </div>
+  <div id="freestyleTimer" class="timer">02:00</div>
+</section>
+
+<script>
+  // Warm-Up Timer
+  let warmupSeconds = 300;
+  let warmupInterval;
+  document.getElementById('startWarmup').addEventListener('click', () => {
+    clearInterval(warmupInterval);
+    warmupSeconds = 300;
+    warmupInterval = setInterval(() => {
+      let min = Math.floor(warmupSeconds/60).toString().padStart(2,'0');
+      let sec = (warmupSeconds%60).toString().padStart(2,'0');
+      document.getElementById('warmupTimer').textContent = min+":"+sec;
+      if(warmupSeconds-- <= 0) clearInterval(warmupInterval);
+    },1000);
+  });
+
+  // Freestyle Timer
+  let freestyleSeconds = 120;
+  let freestyleInterval;
+  document.getElementById('startFreestyle').addEventListener('click', () => {
+    clearInterval(freestyleInterval);
+    freestyleSeconds = 120;
+    freestyleInterval = setInterval(() => {
+      let min = Math.floor(freestyleSeconds/60).toString().padStart(2,'0');
+      let sec = (freestyleSeconds%60).toString().padStart(2,'0');
+      document.getElementById('freestyleTimer').textContent = min+":"+sec;
+      if(freestyleSeconds-- <= 0) clearInterval(freestyleInterval);
+    },1000);
+  });
+
+  // Memory Game
+  const moves = ['Popping','Locking','Toprock','Popping','Locking','Toprock'];
+  const memoryGrid = document.getElementById('memoryGrid');
+  let firstCard = null, secondCard = null;
+  let lockBoard = false;
+
+  function shuffle(array){return array.sort(()=>Math.random()-0.5);}
+  const shuffled = shuffle(moves);
+
+  shuffled.forEach((move)=>{
+    const div = document.createElement('div');
+    div.className='memory-card';
+    div.textContent='?';
+    div.dataset.move=move;
+    div.addEventListener('click',flipCard);
+    memoryGrid.appendChild(div);
+  });
+
+  function flipCard(){
+    if(lockBoard) return;
+    this.textContent=this.dataset.move;
+    if(!firstCard){firstCard=this; return;}
+    secondCard=this;
+    if(firstCard.dataset.move===secondCard.dataset.move){
+      firstCard=null; secondCard=null;
+    }else{
+      lockBoard=true;
+      setTimeout(()=>{
+        firstCard.textContent='?';
+        secondCard.textContent='?';
+        firstCard=null; secondCard=null;
+        lockBoard=false;
+      },1000);
+    }
+  }
+</script>
+</body>
+</html>
